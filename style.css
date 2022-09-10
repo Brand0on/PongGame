@@ -15,3 +15,13 @@ body {
 canvas {
   background-color: rgb(99, 155, 185);
 }
+
+.screen {
+  width: 900px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(62, 97, 116);
+}
