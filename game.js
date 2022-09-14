@@ -1,8 +1,15 @@
-const INITIAL_PLAYER1_X = 15;
-const INITIAL_PLAYER1_Y = 235;
+const INITIAL_PLAYER1_X = PLAYER_PADDING_FROM_EDGE;
+const INITIAL_PLAYER1_Y = (SCREEN_HEIGHT - PLAYER_PADDLE_HEIGHT) / 2;
 //this are the positions of the players at the beginning of the game.
-const INITIAL_PLAYER2_X = 874;
-const INITIAL_PLAYER2_Y = 235;
+const INITIAL_PLAYER2_X =
+  SCREEN_WIDTH - PLAYER_PADDING_FROM_EDGE - PLAYER_PADDLE_WIDTH;
+const INITIAL_PLAYER2_Y = (SCREEN_HEIGHT - PLAYER_PADDLE_HEIGHT) / 2;
+
+const SCORE_POSITION_PLAYER_1 = SCREEN_WIDTH / 3 - SCORES_SIZE / 2;
+const SCORE_POSITION_PLAYER_2 = (SCREEN_WIDTH / 3) * 2 - SCORES_SIZE / 2;
+
+const BALL_START_X = SCREEN_WIDTH / 2;
+const BALL_START_Y = SCREEN_HEIGHT / 2;
 
 class Game {
   constructor(gameScreenElement, gameOverScreenElement) {
@@ -12,21 +19,29 @@ class Game {
     this.context = this.canvasElement.getContext("2d");
 
     this.enableControls();
-    //creating the players and the ball in the game
-    this.player = new Player(this, INITIAL_PLAYER1_X, INITIAL_PLAYER1_Y);
-    this.player2 = new Player(this, INITIAL_PLAYER2_X, INITIAL_PLAYER2_Y);
-    this.ball = new Ball(this, "red");
-    this.scorePlayer1 = new Scores(this, 250, 100, 0);
-    this.scorePlayer2 = new Scores(this, 600, 100, 0);
     this.reset();
+    this.image = new Image();
+    this.image.src = "pong_background.png";
   }
 
   reset() {
     this.player = new Player(this, INITIAL_PLAYER1_X, INITIAL_PLAYER1_Y);
     this.player2 = new Player(this, INITIAL_PLAYER2_X, INITIAL_PLAYER2_Y);
-    this.ball = new Ball(this, "red");
-    this.scorePlayer1 = new Scores(this, 250, 100, 0);
-    this.scorePlayer2 = new Scores(this, 600, 100, 0);
+    this.balls = [];
+    this.addBall("red");
+    //this.addBall("green");
+    this.scorePlayer1 = new Scores(
+      this,
+      SCORE_POSITION_PLAYER_1,
+      SCORES_PADDING_FROM_TOP,
+      0
+    );
+    this.scorePlayer2 = new Scores(
+      this,
+      SCORE_POSITION_PLAYER_2,
+      SCORES_PADDING_FROM_TOP,
+      0
+    );
   }
   //creating a 'event listener' that will move the player when we push the keys.
   enableControls() {
@@ -67,26 +82,48 @@ class Game {
       }
     });
   }
+  explotion() {
+    for (let i = 0; i < this.balls.length; i++) {
+      let ball = this.balls[i];
+      if (ball.contador > 3) {
+        this.addBall("blue");
+
+        ball.contador = 0;
+      }
+    }
+  }
+
+  addBall(color) {
+    this.balls.push(new Ball(this, color));
+  }
 
   //adding one score to the player
   addScores() {
-    //this addes scores to player1
-    if (this.ball.x < 0) {
-      this.scorePlayer2.value += 1;
-      this.ball.x = 450;
-      this.ball.y = 300;
-      //console.log(this.ball.x);
-    }
-    //this addes scores to player2
-    if (this.ball.x > 900) {
-      this.scorePlayer1.value += 1;
-      this.ball.x = 450;
-      this.ball.y = 300;
-      //console.log(this.ball.x);
+    //adding scores to player2
+    for (var i = 0; i < this.balls.length; i++) {
+      var ball = this.balls[i];
+      if (ball.x < 0) {
+        this.scorePlayer2.value += 1;
+        ball.x = BALL_START_X;
+        ball.y = BALL_START_Y;
+        ball.contador = 0;
+        //console.log(ball.x);
+      }
+      //adding scores to player1
+      if (ball.x > SCREEN_WIDTH) {
+        this.scorePlayer1.value += 1;
+        ball.x = BALL_START_X;
+        ball.y = BALL_START_Y;
+        ball.contador = 0;
+        //console.log(ball.x);
+      }
     }
   }
   endTheGame() {
-    if (this.scorePlayer1.value > 9 || this.scorePlayer2.value > 9) {
+    if (
+      this.scorePlayer1.value > SCORES_MAX ||
+      this.scorePlayer2.value > SCORES_MAX
+    ) {
       this.lose();
     }
   }
@@ -94,16 +131,23 @@ class Game {
   runLogic() {
     this.player.runLogic();
     this.player2.runLogic();
-    this.ball.runLogic();
+    for (var i = 0; i < this.balls.length; i++) {
+      var ball = this.balls[i];
+      ball.runLogic();
+    }
     this.scorePlayer1.runLogic();
     this.scorePlayer2.runLogic();
   }
   //calling the 'draw' method of each object in the canvas.
   draw() {
-    this.context.clearRect(0, 0, 900, 600);
+    this.context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.context.drawImage(this.image, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     this.player.draw();
     this.player2.draw();
-    this.ball.draw();
+    for (var i = 0; i < this.balls.length; i++) {
+      var ball = this.balls[i];
+      ball.draw();
+    }
 
     this.scorePlayer1.draw();
     this.scorePlayer2.draw();
@@ -117,6 +161,7 @@ class Game {
 
   start() {
     this.reset();
+
     this.intervalId = setInterval(() => {
       this.loop();
     }, 1000 / 60);
@@ -126,5 +171,6 @@ class Game {
     this.draw();
     this.addScores();
     this.endTheGame();
+    this.explotion();
   }
 }

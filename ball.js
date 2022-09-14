@@ -1,18 +1,22 @@
 class Ball {
   constructor(game, color) {
     this.game = game;
+    this.color = color;
+    this.image = new Image();
+    this.image.src = "bomba.png";
     //starting position of the ball
-    this.x = 450;
-    this.y = 300;
+    this.x = SCREEN_WIDTH / 2;
+    this.y = SCREEN_HEIGHT / 2;
     //size of the ball
-    this.width = 50;
-    this.height = 50;
+    // this.width = 50;
+    // this.height = 50;
 
     //making a random direction when the ball starts moving
     this.direction = {
-      x: Math.random() - 0.5 >= 0 ? -8 : 8,
-      y: Math.random() - 0.5 >= 0 ? -8 : 8,
+      x: Math.random() - 0.5 >= 0 ? -BALL_SPEED : BALL_SPEED,
+      y: Math.random() - 0.5 >= 0 ? -BALL_SPEED : BALL_SPEED,
     };
+    this.contador = 0;
   }
 
   runLogic() {
@@ -22,56 +26,74 @@ class Ball {
     this.y = this.y + this.direction.y;
     //making the ball bouncing in the top and the bottom of the canvas
 
-    this.bottomSide = this.y + this.direction.y + 12;
-    this.topSide = this.y + this.direction.y - 12;
-    this.rigthSide = this.x + this.direction.x + 38;
-    this.leftSide = this.x + this.direction.x - 38;
-    if (this.topSide === 0 || this.bottomSide === 600) {
+    this.bottomSide = this.y + BALL_RADIUS;
+    this.topSide = this.y - BALL_RADIUS;
+    this.rigthSide = this.x + BALL_RADIUS;
+    this.leftSide = this.x - BALL_RADIUS;
+    if (this.topSide <= 0 || this.bottomSide >= SCREEN_HEIGHT) {
       this.direction.y = -this.direction.y;
     }
 
-    /*if (this.leftSide === 0 || this.rigthSide === 900) {
+    /*if (this.leftSide === 0 || this.rigthSide === SCREEN_WIDTH) {
       this.direction.x = -this.direction.x;
     }*/
 
     if (
       //making the ball bounce when reaches the paddle vertical line
-      this.x <= this.game.player.x + 25 &&
+      this.x <= this.game.player.x + PLAYER_PADDLE_WIDTH + BALL_RADIUS &&
+      //making sure the ball is not already behind the paddle
+      this.x >
+        this.game.player.x + PLAYER_PADDLE_WIDTH + BALL_RADIUS - BALL_SPEED &&
       //making the ball bounce when reaches the top side of the paddle
-      this.y >= this.game.player.y &&
+      this.y >= this.game.player.y - BALL_RADIUS &&
       //makeing the ball bounce when it reaches the bottom side of the paddle
-      this.y <= this.game.player.y + this.game.player.height
+      this.y <= this.game.player.y + this.game.player.height + BALL_RADIUS
     ) {
       this.direction.x = -this.direction.x;
+      this.contador += 1;
     }
 
     if (
       //making the ball bounce when reaches the paddle vertical line
-      this.x >= this.game.player2.x - 14 &&
+      this.x >= this.game.player2.x - BALL_RADIUS &&
+      //making sure the ball is not already behind the paddle
+      this.x < this.game.player2.x - BALL_RADIUS + BALL_SPEED &&
       //making the ball bounce when reaches the top side of the paddle
-      this.y >= this.game.player2.y &&
+      this.y >= this.game.player2.y - BALL_RADIUS &&
       //makeing the ball bounce when it reaches the bottom side of the paddle
-      this.y <= this.game.player2.y + this.game.player2.height
+      this.y <= this.game.player2.y + this.game.player2.height + BALL_RADIUS
     ) {
       this.direction.x = -this.direction.x;
+      this.contador += 1;
     }
 
-    if (
-      this.x > this.game.player2.x &&
-      this.x < this.game.player2.x + this.game.player2.width &&
-      this.y === this.game.player2.y
-    ) {
-      this.direction.x = -this.direction.x;
-    }
+    // if (
+    //   this.x > this.game.player2.x &&
+    //   this.x < this.game.player2.x + this.game.player2.width &&
+    //   this.y === this.game.player2.y
+    // ) {
+    //   this.direction.x = -this.direction.x;
+    // }
   }
   //console.log(this.game.player.y);
 
   draw() {
     //drawing the ball
-    this.game.context.beginPath();
-    this.game.context.arc(this.x, this.y, 15, 0, Math.PI * 2);
-    this.game.context.fill();
+    //this.game.context.beginPath();
+    //this.game.context.arc(this.x, this.y, BALL_RADIUS, 0, Math.PI * 2);
+    //const oldFillStyle = this.game.context.fillStyle;
+    //this.game.context.fillStyle = this.color;
+    //this.game.context.fill();
+    //this.game.context.fillStyle = oldFillStyle;
 
     //this.context.fillRect(this.x, this.y, this.width, this.height);
+
+    this.game.context.drawImage(
+      this.image,
+      this.x - BOMB_RADIUS / 2,
+      this.y - BOMB_RADIUS / 2,
+      BOMB_RADIUS,
+      BOMB_RADIUS
+    );
   }
 }
