@@ -13,7 +13,7 @@ body {
 }
 
 canvas {
-  background-color: rgb(99, 155, 185);
+  background-color: rgb(48, 75, 126);
 }
 
 .screen {
@@ -23,5 +23,18 @@ canvas {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgb(62, 97, 116);
+  background-color: rgb(12, 69, 92);
+}
+#play_again_button,
+#start_game_button {
+  color: yellow;
+
+  border-radius: 7px;
+  padding: 15px;
+  width: 250px;
+  border: 10px;
+  font-size: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  cursor: not-allowed;
+  background-color: black;
 }

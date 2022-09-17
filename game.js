@@ -21,7 +21,7 @@ class Game {
     this.enableControls();
     this.reset();
     this.image = new Image();
-    this.image.src = "pong_background.png";
+    this.image.src = "photos/pong_background.png";
   }
 
   reset() {
@@ -87,6 +87,7 @@ class Game {
       let ball = this.balls[i];
       if (ball.contador > 3) {
         this.addBall("blue");
+        EXPLOSION_SOUND.play();
 
         ball.contador = 0;
       }

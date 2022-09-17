@@ -15,3 +15,6 @@ const BALL_RADIUS = 25;
 const BALL_SPEED = 8;
 
 const BOMB_RADIUS = 50;
+
+const BOUNCE_SOUND = new Audio("sounds/touch_sound.mp3");
+const EXPLOSION_SOUND = new Audio("sounds/bomb_sound.mp3");

@@ -3,7 +3,7 @@ class Ball {
     this.game = game;
     this.color = color;
     this.image = new Image();
-    this.image.src = "bomba.png";
+    this.image.src = "photos/bomba.png";
     //starting position of the ball
     this.x = SCREEN_WIDTH / 2;
     this.y = SCREEN_HEIGHT / 2;
@@ -34,10 +34,6 @@ class Ball {
       this.direction.y = -this.direction.y;
     }
 
-    /*if (this.leftSide === 0 || this.rigthSide === SCREEN_WIDTH) {
-      this.direction.x = -this.direction.x;
-    }*/
-
     if (
       //making the ball bounce when reaches the paddle vertical line
       this.x <= this.game.player.x + PLAYER_PADDLE_WIDTH + BALL_RADIUS &&
@@ -51,6 +47,7 @@ class Ball {
     ) {
       this.direction.x = -this.direction.x;
       this.contador += 1;
+      BOUNCE_SOUND.play();
     }
 
     if (
@@ -65,6 +62,7 @@ class Ball {
     ) {
       this.direction.x = -this.direction.x;
       this.contador += 1;
+      BOUNCE_SOUND.play();
     }
 
     // if (
